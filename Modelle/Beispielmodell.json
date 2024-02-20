@@ -1,0 +1,14 @@
+{
+  "RepertoireAbteilungen": [
+    "Abteilung 1"
+  ],
+  "RepertoireGruende": {
+    "Abteilung 1": ["Grund 1"]
+  },
+  "RepertoireVerantwortliche": {
+    "Abteilung 1": ["Max Mustermann"]
+  },
+  "VerantwortlicheAdressen": {
+    "Max Mustermann": ["max.mustermann@lalala.de"]
+  }
+}

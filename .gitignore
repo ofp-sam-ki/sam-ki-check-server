@@ -1,0 +1,14 @@
+
+# Cordova
+/src-cordova/platforms
+/src-cordova/plugins
+/public/cordova.js
+node_modules
+/dist
+/android
+/ios
+package-lock.json
+/Meldungen
+index-linux
+index-macos
+index-win.exe
