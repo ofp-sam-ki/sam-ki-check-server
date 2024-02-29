@@ -12,3 +12,6 @@ package-lock.json
 index-linux
 index-macos
 index-win.exe
+/binaries
+/pruefungen
+/pruefplaene
