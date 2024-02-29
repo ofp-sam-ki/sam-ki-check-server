@@ -46,7 +46,7 @@ function fileFilter (req, file, cb)
 }
 
 const storage = multer.diskStorage({
-  destination: 'uploads/',
+  destination: 'pruefungen/',
   filename: function (req, file, cb) {
     cb(null, file.originalname)
   }
@@ -174,6 +174,14 @@ app.post('/pruefungen/zwischenspeichern', uploadStorage.fields([{name: 'pruefung
   //mindestens "pruefung" muss vorhanden sein, sonst verwerfen --> löschen und 500 o.ä. rückmelden
   //"pruefung" muss mindestfelder definiert haben: prüfplan, produkt, erstellort, zeitstempel --> sonst löschen und 500 o.Ä. rückmelden
   //"pruefung" und "daten" (falls vorhanden) müssen mit einer kombination aus prüfplan (erstellort?) und zeitstempel im dateinamen erweitert werden
+
+  if (!fs.existsSync("pruefungen")) {
+    fs.mkdirSync("pruefungen/zwischengespeichert", { recursive: true });
+  }
+
+  fs.rename("pruefungen/" + pruefung, "pruefungen/zwischengespeichert/" + pruefung);
+
+  fs.rename("pruefungen/" + daten, "pruefungen/zwischengespeichert/daten_" + pruefung);
 });
 
 app.get('/pruefungen/liste', (req, res) => {
@@ -186,11 +194,11 @@ app.get('/pruefungen/liste', (req, res) => {
       const endung = path.extname(datei);
 
       if (endung === `.json`) {
-        pruefungen.push(datei);
+        pruefungen.push(path.basename(datei, endung));
       }
     }
 
-    res.status(200).json(pruefplaene);
+    res.status(200).json(pruefungen);
   } catch (err) {
     console.error(err);
     res.status(500).send(err);
@@ -200,15 +208,17 @@ app.get('/pruefungen/liste', (req, res) => {
 app.get('/pruefungen/:pruefung', (req, res) => {
   try {
     res.sendFile('/pruefung/' + req.params.pruefung + ".json");
-  } catch {
-    res.status(404);
+  } catch (err) {
+    console.error(err);
+    res.status(404).send(err);
   }
 });
 
 app.get('/pruefungen_daten/:pruefung', (req, res) => {
   try {
     res.sendFile('/pruefung/' + req.params.pruefung + "_daten.zip");
-  } catch {
-    res.status(404);
+  } catch (err) {
+    console.error(err);
+    res.status(404).send(err);
   }
 });
