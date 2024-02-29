@@ -20,20 +20,40 @@ require( 'console-stamp' )( console );
 
 const multer = require('multer');
 
-// Konfiguration für das Speichern der hochgeladenen Datei
+// Konfiguration für das Speichern der hochgeladenen Datei/* 
+/* const storage = multer.diskStorage({dest: 'pruefungen/'}); */
+
+function fileFilter (req, file, cb)
+{
+
+  // The function should call `cb` with a boolean
+  // to indicate if the file should be accepted
+
+  // To reject this file pass `false`, like so:
+  if (file.mimetype == 'application/json' || file.mimetype == 'application/zip') {
+    cb(null, true);
+    return;
+  }
+  
+  cb(null, false)
+
+  // To accept the file pass `true`, like so:
+  
+
+  // You can always pass an error if somsething goes wrong:
+  cb(new Error('I don\'t have a clue!'))
+
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // wie komme ich hier entweder zum Ordner senden, oder zum Ordner speichern?
-    //cb(null, 'pruefungen/');
-    cb(null, '/pruefungen/speichern/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
+  destination: 'uploads/',
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
   }
 });
 
 //const upload = multer({ storage });
-const uploadStorage = multer({ storage: storage });
+const uploadStorage = multer({ storage: storage, fileFilter: fileFilter });
 
 var hostid_file = "hostid.json";
 var hostid;
@@ -142,3 +162,53 @@ app.delete('/pruefungen/speichern/:pruefplan', (req, res) => {
       }
     });
   });
+
+app.post('/pruefungen/zwischenspeichern', uploadStorage.fields([{name: 'pruefung', maxCount: 1}, {name: 'daten', maxCount: 1}]), (req, res) => {
+  /* req.files */
+  /* var pruefung = req.params.pruefung;
+  console.log("POST /pruefungen/speichern/");
+  //console.log("Pruefplan speichern:", req.file.originalname);
+  fs.writeFileSync("pruefungen/speichern/" + pruefung + ".json", JSON.stringify(req.body)); */
+  res.status(200).send("Pruefplan erfolgreich gespeichert.");
+
+  //mindestens "pruefung" muss vorhanden sein, sonst verwerfen --> löschen und 500 o.ä. rückmelden
+  //"pruefung" muss mindestfelder definiert haben: prüfplan, produkt, erstellort, zeitstempel --> sonst löschen und 500 o.Ä. rückmelden
+  //"pruefung" und "daten" (falls vorhanden) müssen mit einer kombination aus prüfplan (erstellort?) und zeitstempel im dateinamen erweitert werden
+});
+
+app.get('/pruefungen/liste', (req, res) => {
+  const pruefungen = [];
+
+  try {
+    const dateien = fs.readdirSync("pruefungen/zwischengespeichert");
+
+    for (const datei of dateien) {
+      const endung = path.extname(datei);
+
+      if (endung === `.json`) {
+        pruefungen.push(datei);
+      }
+    }
+
+    res.status(200).json(pruefplaene);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+app.get('/pruefungen/:pruefung', (req, res) => {
+  try {
+    res.sendFile('/pruefung/' + req.params.pruefung + ".json");
+  } catch {
+    res.status(404);
+  }
+});
+
+app.get('/pruefungen_daten/:pruefung', (req, res) => {
+  try {
+    res.sendFile('/pruefung/' + req.params.pruefung + "_daten.zip");
+  } catch {
+    res.status(404);
+  }
+});
