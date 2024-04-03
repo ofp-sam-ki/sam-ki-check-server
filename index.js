@@ -63,10 +63,10 @@ app.listen(port, () => {
 });
 
 
-app.get('/Pruefplaeneverzeichnis', async (req, res) => {
-    console.log("GET Pruefplaeneverzeichnis.json" + req.url);
+app.get('/Pruefplaeneverzeichnis_Test', async (req, res) => {
+    console.log("GET Pruefplaeneverzeichnis_Test.json" + req.url);
     try {
-        const pruefplaene = JSON.parse(fs.readFileSync('Pruefplaeneverzeichnis.json', 'utf-8'));
+        const pruefplaene = JSON.parse(fs.readFileSync('Pruefplaeneverzeichnis_Test.json', 'utf-8'));
     res.status(200).json(pruefplaene);
        /* if (req.params.Pruefplaeneverzeichnis.indexOf('..') != -1) {
             console.log("Pruefplaeneverzeichnis not found");
@@ -79,7 +79,25 @@ app.get('/Pruefplaeneverzeichnis', async (req, res) => {
         res.status(500).send(err);
     }
 });
-
+/*
+app.get('/pruefplaene/Servicegeräte', async (req, res) => { //löschen?
+  console.log("GET Servicegeräte.json" + req.url);
+  try {
+      const pruefplan = JSON.parse(fs.readFileSync('pruefplaene/Servicegeräte.json', 'utf-8'));
+  res.status(200).json(pruefplan);
+     /* if (req.params.Pruefplaeneverzeichnis.indexOf('..') != -1) {
+          console.log("Pruefplaeneverzeichnis not found");
+          res.status(404).send(err);
+      }
+      console.log("OK");
+      res.status(200).send(fs.readFileSync("Pruefplaeneverzeichnis.json" + req.params.Pruefplaeneverzeichnis)); */
+      /*
+  } catch (err) {
+      console.error(err);
+      res.status(500).send(err);
+  }
+});
+*/
 app.get('/pruefplaene/:pruefplan', async (req, res) => {
     console.log("GET /pruefplaene");
     try {
