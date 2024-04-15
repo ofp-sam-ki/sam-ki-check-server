@@ -3,6 +3,7 @@
 const path = require('path');
 
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const app = express();
 
 const fetch = require("node-fetch");
@@ -18,6 +19,10 @@ const { Console } = require('console');
 const { json } = require('body-parser');
 require( 'console-stamp' )( console );
 
+app.use(fileUpload({
+  createParentPath: true
+}));
+
 const multer = require('multer');
 
 // Konfiguration für das Speichern der hochgeladenen Datei/* 
@@ -29,7 +34,9 @@ function fileFilter (req, file, cb)
   // The function should call `cb` with a boolean
   // to indicate if the file should be accepted
 
-  // To reject this file pass `false`, like so:
+  cb(null, true);
+    return;
+
   if (file.mimetype == 'application/json' || file.mimetype == 'application/zip') {
     cb(null, true);
     return;
@@ -37,11 +44,9 @@ function fileFilter (req, file, cb)
   
   cb(null, false)
 
-  // To accept the file pass `true`, like so:
-  
 
   // You can always pass an error if somsething goes wrong:
-  cb(new Error('I don\'t have a clue!'))
+  //cb(new Error('I don\'t have a clue!'))
 
 }
 
@@ -141,27 +146,71 @@ app.post('/pruefungen/speichern/:pruefung', uploadStorage.single('file'), (req, 
 });
 
 app.post("/pruefungen/senden", uploadStorage.single('pruefplan'), async (req, res) => {
-    console.log("POST pruefungen/senden");
-    console.log("Pruefplan hochgeladen:", req.file.originalname);
+  console.log("POST pruefungen/senden");
+  console.log("Pruefplan hochgeladen:", req.file.originalname);
     
   res.status(200).send("Pruefplan erfolgreich hochgeladen.");
 });
 
 app.delete('/pruefungen/speichern/:pruefplan', (req, res) => {
-    const pruefplan = req.params.pruefplan;
-    const sendenPath = path.join(__dirname, 'pruefungen', 'senden', pruefplan + '.json');
-    const speichernPath = path.join(__dirname, 'pruefungen', 'speichern', pruefplan + '.json');
-    
-    fs.unlink(speichernPath, (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send(err);
-      } else {
-        console.log(`DELETE /pruefungen/speichern/${pruefplan}`);
-        res.status(200).send("Pruefplan erfolgreich gelöscht.");
-      }
-    });
+  const pruefplan = req.params.pruefplan;
+  const sendenPath = path.join(__dirname, 'pruefungen', 'senden', pruefplan + '.json');
+  const speichernPath = path.join(__dirname, 'pruefungen', 'speichern', pruefplan + '.json');
+  
+  fs.unlink(speichernPath, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send(err);
+    } else {
+      console.log(`DELETE /pruefungen/speichern/${pruefplan}`);
+      res.status(200).send("Pruefplan erfolgreich gelöscht.");
+    }
   });
+});
+
+app.get("/pruefungen/senden/:pruefung", (req, res) => {
+  if (!fs.existsSync("pruefungen/gesendet")) {
+    fs.mkdirSync("pruefungen/gesendet", { recursive: true });
+  }
+
+  fs.rename("pruefungen/" + req.params.pruefung, "pruefungen/zwischengespeichert/" + req.params.pruefung);
+
+
+  res.status(200).send("Pruefplan erfolgreich hochgeladen.");
+});
+
+app.post('/pruefungen/zwischenspeichern', (req, res) => {
+  /* req.files */
+  /* var pruefung = req.params.pruefung;
+  console.log("POST /pruefungen/speichern/");
+  //console.log("Pruefplan speichern:", req.file.originalname);
+  fs.writeFileSync("pruefungen/speichern/" + pruefung + ".json", JSON.stringify(req.body)); */
+  
+
+  //mindestens "pruefung" muss vorhanden sein, sonst verwerfen --> löschen und 500 o.ä. rückmelden
+  //"pruefung" muss mindestfelder definiert haben: prüfplan, produkt, erstellort, zeitstempel --> sonst löschen und 500 o.Ä. rückmelden
+  //"pruefung" und "daten" (falls vorhanden) müssen mit einer kombination aus prüfplan (erstellort?) und zeitstempel im dateinamen erweitert werden
+
+  if (!fs.existsSync("pruefungen/zwischengespeichert")) {
+    fs.mkdirSync("pruefungen/zwischengespeichert", { recursive: true });
+  }
+
+  var dateien = req.files;
+
+  Console.log(JSON.stringify(req));
+
+  //const pruefung_ = JSON.parse(fs.readFileSync(req.files.pruefung[0].path, 'utf-8'));
+  const pruefung_ = JSON.parse(fs.readFileSync(req.files.pruefung[0].path, 'utf-8'));
+  //pruefung_.zeitstempel?
+  //pruefung_.pruefplan?
+
+
+  path.basename(path.extname(req.files.pruefung[0].filename), endung)
+  fs.rename("pruefungen/" + req.files.pruefung[0].filename, "pruefungen/zwischengespeichert/" + pruefung);
+  fs.rename("pruefungen/" + req.files.daten[0].filename, "pruefungen/zwischengespeichert/daten_" + pruefung);
+
+  res.status(200).send("Pruefplan erfolgreich gespeichert.");
+});
 
 app.post('/pruefungen/zwischenspeichern', uploadStorage.fields([{name: 'pruefung', maxCount: 1}, {name: 'daten', maxCount: 1}]), (req, res) => {
   /* req.files */
@@ -169,19 +218,26 @@ app.post('/pruefungen/zwischenspeichern', uploadStorage.fields([{name: 'pruefung
   console.log("POST /pruefungen/speichern/");
   //console.log("Pruefplan speichern:", req.file.originalname);
   fs.writeFileSync("pruefungen/speichern/" + pruefung + ".json", JSON.stringify(req.body)); */
-  res.status(200).send("Pruefplan erfolgreich gespeichert.");
+  
 
   //mindestens "pruefung" muss vorhanden sein, sonst verwerfen --> löschen und 500 o.ä. rückmelden
   //"pruefung" muss mindestfelder definiert haben: prüfplan, produkt, erstellort, zeitstempel --> sonst löschen und 500 o.Ä. rückmelden
   //"pruefung" und "daten" (falls vorhanden) müssen mit einer kombination aus prüfplan (erstellort?) und zeitstempel im dateinamen erweitert werden
 
-  if (!fs.existsSync("pruefungen")) {
+  if (!fs.existsSync("pruefungen/zwischengespeichert")) {
     fs.mkdirSync("pruefungen/zwischengespeichert", { recursive: true });
   }
 
-  fs.rename("pruefungen/" + pruefung, "pruefungen/zwischengespeichert/" + pruefung);
+  const pruefung_ = JSON.parse(fs.readFileSync(req.files.pruefung[0].path, 'utf-8'));
+  //pruefung_.zeitstempel?
+  //pruefung_.pruefplan?
 
-  fs.rename("pruefungen/" + daten, "pruefungen/zwischengespeichert/daten_" + pruefung);
+
+  path.basename(path.extname(req.files.pruefung[0].filename), endung)
+  fs.rename("pruefungen/" + req.files.pruefung[0].filename, "pruefungen/zwischengespeichert/" + pruefung);
+  fs.rename("pruefungen/" + req.files.daten[0].filename, "pruefungen/zwischengespeichert/daten_" + pruefung);
+
+  res.status(200).send("Pruefplan erfolgreich gespeichert.");
 });
 
 app.get('/pruefungen/liste', (req, res) => {
