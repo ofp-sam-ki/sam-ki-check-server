@@ -1,21 +1,21 @@
 {
     "Eingangsinformationen": {
         "Auftrag": {
-            "Beschreibung": "PR49502",
+            "Beschreibung": "",
             "Typ": "Text"
         },
         "Baugruppe": {
-            "Beschreibung": "Ventil",
+            "Beschreibung": "",
             "Typ": "Text",
             "Benoetigt": true
         },
         "Maschinennr.": {
-            "Beschreibung": "3822",
+            "Beschreibung": "",
             "Typ": "Text",
             "Benötigt": false
         },
         "Bearbeiter 1 (Mechanik)": {
-            "Beschreibung": "Daniel Götz",
+            "Beschreibung": "",
             "Typ": "Text",
             "Benötigt": false
         }

@@ -32,6 +32,42 @@ const storage = multer.diskStorage({
   }
 });
 
+//Function
+function createJsonFromFilenames(relativeDirectory) {
+    const directory = path.join(process.cwd(), relativeDirectory);
+
+    // Lese das Verzeichnis
+    fs.readdir(directory, (err, files) => {
+        if (err) {
+            console.error("Fehler beim Lesen des Verzeichnisses: ", err);
+            return;
+        }
+        
+        let result = {};
+        let index = 1;
+
+        // Filtere JSON-Dateien und entferne die Dateiendungen
+        files.forEach(file => {
+            if (path.extname(file) === '.json') {
+                const filenameWithoutExt = path.basename(file, '.json');
+                result[`Pruefplan${index}`] = [filenameWithoutExt];
+                index++;
+            }
+        });
+
+        // Schreibe das Ergebnis in eine neue JSON-Datei
+        fs.writeFile(path.join(directory, 'result.json'), JSON.stringify(result, null, 2), (err) => {
+            if (err) {
+                console.error("Fehler beim Schreiben der JSON-Datei: ", err);
+            } else {
+                console.log("Die JSON-Datei wurde erfolgreich geschrieben!");
+            }
+        });
+    });
+}
+
+
+
 //const upload = multer({ storage });
 const uploadStorage = multer({ storage: storage });
 
@@ -78,6 +114,37 @@ app.get('/Pruefplaeneverzeichnis_Test', async (req, res) => {
         console.error(err);
         res.status(500).send(err);
     }
+});
+// Create Zwischenspeicher Verzeichnis
+app.get('/createZwischenspeicherverzeichnis_List', async (req, res) => {
+    console.log("Create Zwischenspeicherverzeichnis result.json" + req.url);
+    try {
+        createJsonFromFilenames('pruefungen/speichern');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+    }
+    
+});
+// Get Zwischenspeicher Verzeichnis
+app.get('/Zwischenspeicherverzeichnis_List', async (req, res) => {
+    console.log("GET Zwischenspeicherverzeichnis_Test.json" + req.url);
+
+    try {
+        const zg_pruefplaene = JSON.parse(fs.readFileSync('pruefungen/speichern/result.json', 'utf-8'));
+        res.status(200).json(zg_pruefplaene);
+        console.log("send zg_List")
+       /* if (req.params.Pruefplaeneverzeichnis.indexOf('..') != -1) {
+            console.log("Pruefplaeneverzeichnis not found");
+            res.status(404).send(err);
+        }
+        console.log("OK");
+        res.status(200).send(fs.readFileSync("Pruefplaeneverzeichnis.json" + req.params.Pruefplaeneverzeichnis));  */
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+    }
+    
 });
 /*
 app.get('/pruefplaene/Servicegeräte', async (req, res) => { //löschen?
