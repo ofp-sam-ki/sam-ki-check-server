@@ -10,5 +10,11 @@
   },
   "VerantwortlicheAdressen": {
     "Max Mustermann": ["max.mustermann@lalala.de"]
+  },
+  "Anlagen": {
+    "Auftrag": "Code",
+    "Baugruppe": "Code",
+    "Foto": "Foto",
+    "Freitext": "Text"
   }
 }

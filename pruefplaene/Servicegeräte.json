@@ -1,0 +1,76 @@
+{
+    "Eingangsinformationen": {
+        "Auftrag": {
+            "Beschreibung": "",
+            "Typ": "Text"
+        },
+        "Baugruppe": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benoetigt": true
+        },
+        "Maschinennr.": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": false
+        },
+        "Bearbeiter 1 (Mechanik)": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": false
+        }
+    },
+    "MechanischePrüfung": {
+        "E1": {
+            "Beschreibung": "Kontrolle ob Behältergröße im Auftrag übereinstimmt",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E2": {
+            "Beschreibung": "Aufbau der Steuerung nach Stückliste geprüft",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E3": {
+            "Beschreibung": "Schaltschrank auf Sauberkeit geprüft",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E4": {
+            "Beschreibung": "Kabel nicht an Leitungen und sich erwärmenden Bauteilen befestigt",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E5": {
+            "Beschreibung": "Trafo auf richtigen Anschluss geprüft",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E6": {
+            "Beschreibung": "SPS-Programm eingespielt und Parameter eingestellt",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        }
+    },
+    "ElektrischePrüfung": {
+        "Schritt1": {
+            "Beschreibung": "hallo",
+            "Typ": "Anleitung"
+        },
+        "Schritt2": {
+            "Beschreibung": "",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "Schritt3": {
+            "Beschreibung": "",
+            "Typ": "Foto",
+            "Benötigt": false
+        },
+        "Schritt4": {
+            "Beschreibung": "",
+            "Typ": "Checkbox",
+            "Benötigt": false
+        }
+    }
+}

@@ -2,5 +2,6 @@
     "Pruefplan1": ["Maschine1"],
     "Pruefplan2": ["Maschine2", "Maschine3"],
     "Pruefplan3": ["Maschine2", "Maschine3"],
+    "Pruefplan_Test": ["MaschineTest__________", "MaschineTest"],
     "Pruefplan4": ["Maschine2", "Maschine3"]
 }
