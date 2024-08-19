@@ -23,8 +23,7 @@ const multer = require('multer');
 // Konfiguration für das Speichern der hochgeladenen Datei
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // wie komme ich hier entweder zum Ordner senden, oder zum Ordner speichern?
-    //cb(null, 'pruefungen/');
+
     cb(null, '/pruefungen/speichern/');
   },
   filename: (req, file, cb) => {
