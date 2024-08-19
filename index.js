@@ -33,8 +33,8 @@ const storage = multer.diskStorage({
 });
 
 //Function
-function createJsonFromFilenames(relativeDirectory) {
-    const directory = path.join(process.cwd(), relativeDirectory);
+function createJsonFromFilenames(searchDirectory, saveDirectory) {
+    const directory = path.join(process.cwd(), searchDirectory);
 
     // Lese das Verzeichnis
     fs.readdir(directory, (err, files) => {
@@ -56,7 +56,7 @@ function createJsonFromFilenames(relativeDirectory) {
         });
 
         // Schreibe das Ergebnis in eine neue JSON-Datei
-        fs.writeFile(path.join(directory, 'result.json'), JSON.stringify(result, null, 2), (err) => {
+        fs.writeFile(path.join(saveDirectory, 'result.json'), JSON.stringify(result, null, 2), (err) => {
             if (err) {
                 console.error("Fehler beim Schreiben der JSON-Datei: ", err);
             } else {
@@ -102,8 +102,8 @@ app.listen(port, () => {
 app.get('/Pruefplaeneverzeichnis_Test', async (req, res) => {
     console.log("GET Pruefplaeneverzeichnis_Test.json" + req.url);
     try {
-        const pruefplaene = JSON.parse(fs.readFileSync('Pruefplaeneverzeichnis_Test.json', 'utf-8'));
-    res.status(200).json(pruefplaene);
+        const pruefplaene = JSON.parse(fs.readFileSync('Pruefplaeneverzeichnis_Test_.json', 'utf-8'));
+        res.status(200).json(pruefplaene);
        /* if (req.params.Pruefplaeneverzeichnis.indexOf('..') != -1) {
             console.log("Pruefplaeneverzeichnis not found");
             res.status(404).send(err);
@@ -119,7 +119,8 @@ app.get('/Pruefplaeneverzeichnis_Test', async (req, res) => {
 app.get('/createZwischenspeicherverzeichnis_List', async (req, res) => {
     console.log("Create Zwischenspeicherverzeichnis result.json" + req.url);
     try {
-        createJsonFromFilenames('pruefungen/speichern');
+        //createJsonFromFilenames('pruefungen/speichern');
+        createJsonFromFilenames('pruefungen/speichern','');
     } catch (err) {
         console.error(err);
         res.status(500).send(err);
@@ -131,9 +132,11 @@ app.get('/Zwischenspeicherverzeichnis_List', async (req, res) => {
     console.log("GET Zwischenspeicherverzeichnis_Test.json" + req.url);
 
     try {
-        const zg_pruefplaene = JSON.parse(fs.readFileSync('pruefungen/speichern/result.json', 'utf-8'));
+        //const zg_pruefplaene = JSON.parse(fs.readFileSync('pruefungen/speichern/result.json', 'utf-8'));
+        const zg_pruefplaene = JSON.parse(fs.readFileSync('result.json', 'utf-8'));
         res.status(200).json(zg_pruefplaene);
         console.log("send zg_List")
+        console.log(zg_pruefplaene)
        /* if (req.params.Pruefplaeneverzeichnis.indexOf('..') != -1) {
             console.log("Pruefplaeneverzeichnis not found");
             res.status(404).send(err);
@@ -180,6 +183,7 @@ app.get('/pruefplaene/:pruefplan', async (req, res) => {
     }
 });
 
+/*
 app.get('/pruefungen/speichern/:pruefplan', async (req, res) => {
     console.log("GET /pruefungen/speichern" + req.url);
     const pruefplan = req.params.pruefplan;
@@ -196,7 +200,41 @@ app.get('/pruefungen/speichern/:pruefplan', async (req, res) => {
         }
     });
 });
+*/
 
+app.get('/pruefungen/speichern/:pruefplan', async (req, res) => {
+    console.log("GET /pruefungen/speichern" + req.url);
+    const pruefplan = req.params.pruefplan;
+    const filePath = `pruefungen/speichern/${pruefplan}.json`;
+    
+    fs.readFile(filePath, 'utf-8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send(err);
+        } else {
+            console.log("GET /pruefungen/speichern/" + pruefplan);
+            console.log("Pruefplan abgerufen:", data);
+            
+            let jsonData = JSON.parse(data);
+
+            // Funktion zum rekursiven Entfernen der gewünschten Schlüssel
+            function removeKeys(obj) {
+                for (const key in obj) {
+                    if (key === 'erfuellt' || key === 'anzahlSchritte' || key === 'erfuellteSchritte') {
+                        delete obj[key];
+                    } else if (typeof obj[key] === 'object') {
+                        removeKeys(obj[key]);
+                    }
+                }
+            }
+
+            removeKeys(jsonData);
+
+            res.status(200).json(jsonData);
+        }
+    });
+});
+/*
 app.post('/pruefungen/speichern/:pruefung', uploadStorage.single('file'), (req, res) => {
   var pruefung = req.params.pruefung;
   console.log("POST /pruefungen/speichern/");
@@ -204,6 +242,17 @@ app.post('/pruefungen/speichern/:pruefung', uploadStorage.single('file'), (req, 
   fs.writeFileSync("pruefungen/speichern/" + pruefung + ".json", JSON.stringify(req.body));
   res.status(200).send("Pruefplan erfolgreich gespeichert.");
 });
+*/
+
+app.post('/pruefungen/speichern/', (req, res) => {
+    var name = req.query.name;
+    console.log("POST /pruefungen/speichern/");
+    //console.log("Pruefplan speichern:", req.file.originalname);
+    fs.writeFileSync("pruefungen/speichern/" + name + ".json", JSON.stringify(req.body));
+    res.status(200).send("Pruefplan erfolgreich gespeichert.");
+  });
+
+
 
 app.post("/pruefungen/senden", uploadStorage.single('pruefplan'), async (req, res) => {
   //var pruefung = req.;  
