@@ -1,0 +1,122 @@
+{
+    "Eingangsinformationen": {
+        "Auftrag": {
+            "Beschreibung": "",
+            "Typ": "Text"
+        },
+        "Baugruppe": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benoetigt": true
+        },
+        "Maschinennr.": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": false
+        },
+        "Bearbeiter 1 (Mechanik)": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": false
+        },
+        "Bearbeiter 1 (Elektrik)": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": false
+        }
+    },
+    "Mechanische Prüfung": {
+        "E1": {
+            "Beschreibung": "Gestell richtig montiert",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E2": {
+            "Beschreibung": "Hubachse richtig montiert",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E3": {
+            "Beschreibung": "Foto Hubachse",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E4": {
+            "Beschreibung": "Ausleger mit richtigem Maß auf Hubachse montiert",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E5": {
+            "Beschreibung": "Foto Ausleger auf Hubachse",
+            "Typ": "Foto",
+            "Benötigt": false
+        },
+        "E6": {
+            "Beschreibung": "Drosselventile richtig montiert",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E7": {
+            "Beschreibung": "Foto Einbau Drosseln",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E8": {
+            "Beschreibung": "Bandmodul auf die richtige Breite eingestellt",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E9": {
+            "Beschreibung": "Foto Bandmodul",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E10": {
+            "Beschreibung": "Sicherheitsschleuse richtig montiert und leichtgängig",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "E11": {
+            "Beschreibung": "Foto Kabelführung von Energiekette zum Schaltschrank",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E12": {
+            "Beschreibung": "Foto Pneumatikverschlauchung",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E13": {
+            "Beschreibung": "Foto Aufbaublech im Schaltschrank",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E14": {
+            "Beschreibung": "Foto Seite 1 der Station",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E15": {
+            "Beschreibung": "Foto Seite 2 der Station",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E16": {
+            "Beschreibung": "Foto Seite 3 der Station",
+            "Typ": "Foto",
+            "Benötigt": true
+        },
+        "E17": {
+            "Beschreibung": "Foto Seite 4 der Station",
+            "Typ": "Foto",
+            "Benötigt": true
+        }
+    },
+    "Elektrische Prüfung": {
+        "E1": {
+            "Beschreibung": "Foto Kabelführung von Energiekette zum Schaltschrank",
+            "Typ": "Foto",
+            "Benötigt": true
+        }
+    }
+}
