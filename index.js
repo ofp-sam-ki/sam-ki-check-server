@@ -87,7 +87,7 @@ if(fs.existsSync(hostid_file)){
 app.use(cors());
 app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 app.use(bodyParser.json({limit: '100mb'}));
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4001;
 app.listen(port, () => {
     console.log('Server für SAM-KI-Check');
     console.log("(c)2023, 2024 David Breunig, Fraunhofer IPA");
