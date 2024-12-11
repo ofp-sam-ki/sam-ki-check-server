@@ -97,6 +97,15 @@ app.listen(port, () => {
     console.log('PORT als Umgebungsvariable für anderen Port');
 });
 
+app.get('/health', async (req, res) => {
+    console.log("GET " + req.url);
+    try {
+        res.status(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+    }
+});
 
 app.get('/Pruefplaeneverzeichnis_Test', async (req, res) => {
     console.log("GET Pruefplaeneverzeichnis_Test.json" + req.url);
