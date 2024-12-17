@@ -87,7 +87,7 @@ if(fs.existsSync(hostid_file)){
 app.use(cors());
 app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 app.use(bodyParser.json({limit: '100mb'}));
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4001;
 app.listen(port, () => {
     console.log('Server für SAM-KI-Check');
     console.log("(c)2023, 2024 David Breunig, Fraunhofer IPA");
@@ -97,6 +97,15 @@ app.listen(port, () => {
     console.log('PORT als Umgebungsvariable für anderen Port');
 });
 
+app.get('/health', async (req, res) => {
+    console.log("GET " + req.url);
+    try {
+        res.status(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+    }
+});
 
 app.get('/Pruefplaeneverzeichnis_Test', async (req, res) => {
     console.log("GET Pruefplaeneverzeichnis_Test.json" + req.url);

@@ -20,7 +20,7 @@
             "Benötigt": false
         }
     },
-    "MechanischePrüfung": {
+    "Mechanische Prüfung": {
         "E1": {
             "Beschreibung": "Kontrolle ob Behältergröße im Auftrag übereinstimmt",
             "Typ": "Checkbox",
@@ -38,7 +38,7 @@
         },
         "E4": {
             "Beschreibung": "Kabel nicht an Leitungen und sich erwärmenden Bauteilen befestigt",
-            "Typ": "Checkbox",
+            "Typ": "Barcode",
             "Benötigt": true
         },
         "E5": {
@@ -52,7 +52,7 @@
             "Benötigt": true
         }
     },
-    "ElektrischePrüfung": {
+    "Elektrische Prüfung": {
         "Schritt1": {
             "Beschreibung": "hallo",
             "Typ": "Anleitung"
