@@ -49,7 +49,7 @@
         "E5": {
             "Beschreibung": "Foto Ausleger auf Hubachse",
             "Typ": "Foto",
-            "Benötigt": false
+            "Benötigt": true
         },
         "E6": {
             "Beschreibung": "Drosselventile richtig montiert",
