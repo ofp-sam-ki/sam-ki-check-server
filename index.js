@@ -31,6 +31,15 @@ const storage = multer.diskStorage({
   }
 });
 
+// Add this function near the top with other requires and initial setup
+function ensurePruefungenDirectory() {
+    const dir = 'pruefungen/speichern';
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`Created directory: ${dir}`);
+    }
+}
+
 //Function
 function createJsonFromFilenames(searchDirectory, saveDirectory) {
     const directory = path.join(process.cwd(), searchDirectory);
@@ -83,6 +92,10 @@ if(fs.existsSync(hostid_file)){
     obj["hostid"] = hostid;
     fs.writeFileSync(hostid_file, JSON.stringify(obj));
 }
+
+
+// Add this line right before the app.listen() call
+ensurePruefungenDirectory();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
