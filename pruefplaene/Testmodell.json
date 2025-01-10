@@ -2,7 +2,8 @@
     "Eingangsinformationen": {
         "Schritt1": {
             "Beschreibung": "hallo",
-            "Typ": "Anleitung"
+            "Typ": "Anleitung",
+            "Benötigt": true
         },
         "Schritt2": {
             "Beschreibung": "",

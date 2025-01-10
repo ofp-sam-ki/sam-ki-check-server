@@ -1,6 +1,20 @@
 {
-    "Pruefplan1": ["Hebe-Senkstation"],
-    "Pruefplan2": ["Servicegeräte"],
-    "Pruefplan3": ["Wartungsgeräte"]
-
+  "Pruefplan1": [
+    "Hebe-Senkstation"
+  ],
+  "Pruefplan2": [
+    "Servicegeräte"
+  ],
+  "Pruefplan3": [
+    "Testmodell"
+  ],
+  "Pruefplan4": [
+    "Wartungsgeräte"
+  ],
+  "Pruefplan5": [
+    "Wartungsgeräte2"
+  ],
+  "Pruefplan6": [
+    "Wartungsgeraete3"
+  ]
 }
