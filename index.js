@@ -1,5 +1,23 @@
 #!/usr/bin / env node
 
+try {
+    new TextDecoder('ascii');
+} catch {
+    const TD = globalThis.TextDecoder;
+    globalThis.TextDecoder = class {
+        constructor(encoding, options) {
+            this.td = encoding === 'ascii' ? null : new TD(encoding, options);
+        }
+
+        decode(input, options) {
+            if (this.td) return this.td.decode(input, options);
+            let r = '';
+            for (let i = 0; i < input.length; i++) r += String.fromCharCode(input[i]);
+            return r;
+        }
+    };
+}
+
 const path = require('path');
 
 const express = require('express');
@@ -20,6 +38,7 @@ const { json } = require('body-parser');
 require( 'console-stamp' )( console );
 
 const multer = require('multer');
+
 
 let globalPruefplan = null; // Globale Variable
 
@@ -266,8 +285,8 @@ function createTable(doc, headers, rows, startX, startY) {
         }
 
         // Schreiben der aktualisierten JSON in die Datei
-        fs.writeFileSync('Pruefplaeneverzeichnis_Test_.json', JSON.stringify(existingJson, null, 2));
-        console.log('Die aktualisierte JSON wurde in "Pruefplaeneverzeichnis_Test_.json" geschrieben.');
+       // fs.writeFileSync('Pruefplaeneverzeichnis_Test_.json', JSON.stringify(existingJson, null, 2));
+        //console.log('Die aktualisierte JSON wurde in "Pruefplaeneverzeichnis_Test_.json" geschrieben.');
 
     } catch (error) {
         console.error('Fehler beim Einlesen der JSON-Dateien:', error);
@@ -275,7 +294,7 @@ function createTable(doc, headers, rows, startX, startY) {
 }
 
 // Beispiel zum Einlesen der bestehenden JSON-Datei
-const existingJsonFilePath = 'Pruefplaeneverzeichnis_Test_.json'; // Pfad zur JSON-Datei
+//const existingJsonFilePath = 'Pruefplaeneverzeichnis_Test_.json'; // Pfad zur JSON-Datei
 
 let existingJson = {};
 try {
