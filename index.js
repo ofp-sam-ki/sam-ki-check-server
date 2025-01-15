@@ -174,7 +174,7 @@ function createTable(doc, headers, rows, startX, startY) {
         headers.forEach((header, i) => {
             doc.text(header, startX + i * 120, y, { width: 100, align: 'left' });
         });
-        y += 20;
+        y += 50; // statt 20 
     }
 
     // Tabellenzeilen
