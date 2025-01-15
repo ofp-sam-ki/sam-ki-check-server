@@ -1,0 +1,49 @@
+{
+    "Eingangsinformationen": {
+        "Auftrag": {
+            "Beschreibung": "Wartungsgeräte-PR49502",
+            "Typ": "Text",
+            "Benötigt": true
+        },
+        "Baugruppe": {
+            "Beschreibung": "Ventil",
+            "Typ": "Text",
+            "Benötigt": true
+        },
+        "Maschinennr.": {
+            "Beschreibung": "3822",
+            "Typ": "Text",
+            "Benötigt": false
+        },
+        "Bearbeiter 1 (Mechanik)": {
+            "Beschreibung": "Walter Wartung",
+            "Typ": "Text",
+            "Benötigt": false
+        }
+    },
+    "Wartung MechanischePrüfung": {
+        "E1": {
+            "Beschreibung": "Kontrolle ob Behältergröße im Auftrag übereinstimmt",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+
+        "E6": {
+            "Beschreibung": "SPS-Programm eingespielt und Parameter eingestellt",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        }
+    },
+    "Wartung ElektrischePrüfung": {
+        "Schritt1": {
+            "Beschreibung": "hallo",
+            "Typ": "Checkbox"
+
+        },
+        "Schritt4": {
+            "Beschreibung": "",
+            "Typ": "Checkbox",
+            "Benötigt": false
+        }
+    }
+}

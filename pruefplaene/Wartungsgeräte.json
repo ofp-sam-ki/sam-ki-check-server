@@ -2,12 +2,13 @@
     "Eingangsinformationen": {
         "Auftrag": {
             "Beschreibung": "Wartungsgeräte-PR49502",
-            "Typ": "Text"
+            "Typ": "Text",
+            "Benötigt": false
         },
         "Baugruppe": {
             "Beschreibung": "Ventil",
             "Typ": "Text",
-            "Benoetigt": true
+            "Benötigt": false
         },
         "Maschinennr.": {
             "Beschreibung": "3822",
@@ -55,7 +56,8 @@
     "Wartung ElektrischePrüfung": {
         "Schritt1": {
             "Beschreibung": "hallo",
-            "Typ": "Anleitung"
+            "Typ": "Checkbox",
+            "Benötigt": true
         },
         "Schritt2": {
             "Beschreibung": "",

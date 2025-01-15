@@ -2,12 +2,13 @@
     "Eingangsinformationen": {
         "Auftrag": {
             "Beschreibung": "",
-            "Typ": "Text"
+            "Typ": "Text",
+            "Benötigt": true
         },
         "Baugruppe": {
             "Beschreibung": "",
             "Typ": "Text",
-            "Benoetigt": true
+            "Benötigt": true
         },
         "Maschinennr.": {
             "Beschreibung": "",
