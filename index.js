@@ -156,6 +156,7 @@ function createPDF(data, outputFilePath, name) {
                     // Wenn ein Bild vorhanden ist, füge Base64-String in die "Daten"-Spalte ein
                     if (item.Typ === 'Foto' && item.value && item.value.startsWith('data:image')) {
                         row.push(item.value); // Base64-String
+                        // if Barcode dann hier puhsen 
                     } else {
                         row.push('-'); // Keine Daten
                     }
@@ -285,8 +286,8 @@ function createTable(doc, headers, rows, startX, startY) {
         }
 
         // Schreiben der aktualisierten JSON in die Datei
-       // fs.writeFileSync('Pruefplaeneverzeichnis_Test_.json', JSON.stringify(existingJson, null, 2));
-        //console.log('Die aktualisierte JSON wurde in "Pruefplaeneverzeichnis_Test_.json" geschrieben.');
+    fs.writeFileSync('Pruefplaeneverzeichnis_Test_.json', JSON.stringify(existingJson, null, 2));
+    console.log('Die aktualisierte JSON wurde in "Pruefplaeneverzeichnis_Test_.json" geschrieben.');
 
     } catch (error) {
         console.error('Fehler beim Einlesen der JSON-Dateien:', error);
@@ -296,12 +297,12 @@ function createTable(doc, headers, rows, startX, startY) {
 // Beispiel zum Einlesen der bestehenden JSON-Datei
 //const existingJsonFilePath = 'Pruefplaeneverzeichnis_Test_.json'; // Pfad zur JSON-Datei
 
-let existingJson = {};
+/* let existingJson = {};
 try {
     existingJson = JSON.parse(fs.readFileSync(existingJsonFilePath, 'utf-8'));
 } catch (error) {
     console.error('Fehler beim Einlesen der bestehenden JSON-Datei:', error);
-}
+} */
 
 
 //const upload = multer({ storage });
