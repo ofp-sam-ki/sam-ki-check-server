@@ -156,8 +156,11 @@ function createPDF(data, outputFilePath, name) {
                     // Wenn ein Bild vorhanden ist, füge Base64-String in die "Daten"-Spalte ein
                     if (item.Typ === 'Foto' && item.value && item.value.startsWith('data:image')) {
                         row.push(item.value); // Base64-String
-                        // if Barcode dann hier puhsen 
-                    } else {
+                    }
+                    else if (item.Typ === 'Barcode'){
+                        row.push(item.Barcode); // Barcode-Text
+                    }
+                        else {
                         row.push('-'); // Keine Daten
                     }
 
