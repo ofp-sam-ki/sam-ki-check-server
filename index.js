@@ -32,10 +32,19 @@ const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const fs = require('fs');
-const PDFDocument = require('pdfkit');
+//const PDFDocument = require('pdfkit');
+const { PDFDocument, rgb } = require('pdf-lib');
 const { Console } = require('console');
 const { json } = require('body-parser');
 require( 'console-stamp' )( console );
+
+//const zlib = require('zlib');
+
+// Komprimieren
+//function compress () { return zlib.gzipSync(data);}
+
+// Dekomprimieren
+//function decompress () {return zlib.gunzipSync(compress);}
 
 const multer = require('multer');
 
@@ -44,14 +53,15 @@ let globalPruefplan = null; // Globale Variable
 
 // Konfiguration für das Speichern der hochgeladenen Datei
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+    destination: (req, file, cb) => {
+      const dir = path.join(process.cwd(), 'pruefungen', 'speichern'); // Dynamischer Pfad
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    }
+  });
 
-    cb(null, '/pruefungen/speichern/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  }
-});
 
 // Add this function near the top with other requires and initial setup
 function ensurePruefungenDirectory() {
@@ -62,9 +72,13 @@ function ensurePruefungenDirectory() {
     }
 }
 
+// Vor der Verwendung von multer sicherstellen, dass das Verzeichnis existiert
+const uploadDir = path.join(process.cwd(), 'pruefungen', 'speichern');
+ensurePruefungenDirectory(uploadDir);
+
 //Function
 function createJsonFromFilenames(searchDirectory, saveDirectory) {
-    const directory = path.join(process.cwd(), searchDirectory);
+    const directory = path.join(process.cwd(),  searchDirectory);
 
     // Lese das Verzeichnis
     fs.readdir(directory, (err, files) => {
@@ -86,7 +100,7 @@ function createJsonFromFilenames(searchDirectory, saveDirectory) {
         });
 
         // Schreibe das Ergebnis in eine neue JSON-Datei
-        fs.writeFile(path.join(saveDirectory, 'result.json'), JSON.stringify(result, null, 2), (err) => {
+        fs.writeFile(path.join(process.cwd(), saveDirectory, 'result.json'), JSON.stringify(result, null, 2), (err) => {
             if (err) {
                 console.error("Fehler beim Schreiben der JSON-Datei: ", err);
             } else {
@@ -96,66 +110,41 @@ function createJsonFromFilenames(searchDirectory, saveDirectory) {
     });
 }
 
-function createPDF(data, outputFilePath, name) {
-    // Dokument im Querformat erstellen
-    console.log("STart");
-    const doc = new PDFDocument({ layout: 'landscape', margin: 10 });
-    const stream = fs.createWriteStream(outputFilePath);
-
-    doc.pipe(stream);
+async function createPDF(data, outputFilePath, name) {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([900, 2000]); // Seitenformat (Breite, Höhe)
 
     // Titel des PDFs
-    doc.fontSize(16).text(name, { align: 'center' }).moveDown(1);
+    page.drawText(name, {
+        x: 20,
+        y: 1950, // Position y
+        size: 16,
+        color: rgb(0, 0, 0),
+        lineHeight: 20,
+    });
+
+    let yOffset = 1950;
 
     // JSON-Inhalte iterieren
     for (const section in data) {
         const items = data[section];
 
-        doc.fontSize(10).text(section, 40, doc.y + 20, { underline: true }).moveDown(0.5);
-
-
         // Tabellenüberschriften und Zeilen vorbereiten
-        let headers;
+        let headers = [section, 'Benötigt', 'Erfüllt', 'Kommentar', 'Daten'];
         const rows = [];
 
-        if (section === "Eingangsinformationen") {
-            headers = ['Beschreibung'];
-            for (const key in items) {
-                const item = items[key];
-                if (typeof item === 'object') {
-                    const row = [
-                        key,
-                        item.Beschreibung || '',
-
-                    ];
-
-                    // Wenn ein Bild vorhanden ist, füge Base64-String in die "Daten"-Spalte ein
+        for (const key in items) {
+            const item = items[key];
+            if (typeof item === 'object') {
+                const row = [
+                    item.Beschreibung || '',
+                    item.Benötigt !== undefined ? item.Benötigt.toString() : '',
+                    item.erfuellt !== undefined ? item.erfuellt.toString() : '',
+                    item.Kommentar !== undefined ? item.Kommentar.toString() : '-'
+                ];
                     if (item.Typ === 'Foto' && item.value && item.value.startsWith('data:image')) {
                         row.push(item.value); // Base64-String
-                    } else {
-                        row.push(''); // Keine Daten
-                    }
-
-                    rows.push(row);
-                }
-            }
-        } else {
-            // Standardspalten für alle anderen Sektionen
-            headers = ['', 'Beschreibung', 'Benötigt', 'Erfüllt', 'Kommentar', 'Daten'];
-            for (const key in items) {
-                const item = items[key];
-                if (typeof item === 'object') {
-                    const row = [
-                        key,
-                        item.Beschreibung || '',
-                        item.Benötigt !== undefined ? item.Benötigt.toString() : '',
-                        item.erfuellt !== undefined ? item.erfuellt.toString() : '',
-                        item.Kommentar !== undefined ? item.Kommentar.toString() : '-'
-                    ];
-
-                    // Wenn ein Bild vorhanden ist, füge Base64-String in die "Daten"-Spalte ein
-                    if (item.Typ === 'Foto' && item.value && item.value.startsWith('data:image')) {
-                        row.push(item.value); // Base64-String
+                        yOffset -= 50;
                     }
                     else if (item.Typ === 'Barcode'){
                         row.push(item.Barcode); // Barcode-Text
@@ -163,82 +152,82 @@ function createPDF(data, outputFilePath, name) {
                         else {
                         row.push('-'); // Keine Daten
                     }
-
-                    rows.push(row);
-                }
+                
+                rows.push(row);
             }
         }
 
         // Tabelle zeichnen
-        doc.moveDown();
-        createTable(doc, headers, rows, 50, doc.y);
+        yOffset -= 20; // Abstand nach oben für die Tabelle
+        await createTable(page, headers, rows, 50, yOffset - 120, pdfDoc);
 
         // Neue Seite, wenn Platz knapp wird
-        if (doc.y > 500) {
-            doc.addPage({ layout: 'landscape' });
+        if (yOffset < 50) {
+            yOffset = 1900; // Zurücksetzen auf die nächste Seite
+            pdfDoc.addPage([900, 2000]); // Neue Seite hinzufügen
+        } else {
+            yOffset -= rows.length * 50 + 50; // Abstand für die nächste Abschnittsüberschrift
         }
     }
 
-    // Dokument abschließen
-    doc.end();
-
-    stream.on('finish', () => {
-        console.log(`PDF wurde erstellt: ${outputFilePath}`);
-    });
+    // Speichere das Dokument
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync(outputFilePath, pdfBytes);
+    console.log(`PDF wurde erstellt: ${outputFilePath}`);
 }
 
 // Funktion zum Zeichnen der Tabelle
-function createTable(doc, headers, rows, startX, startY) {
+async function createTable(page, headers, rows, startX, startY, pdfDoc) {
     let y = startY;
 
     // Tabellenüberschriften
-    if (headers.length > 1) { // Nur ausgeben, wenn es Spaltenüberschriften gibt
-        doc.fontSize(8).font('Helvetica-Bold');
+    if (headers.length > 1) {
         headers.forEach((header, i) => {
-            doc.text(header, startX + i * 120, y, { width: 100, align: 'left' });
+            page.drawText(header, {
+                x: startX + i * 190,
+                y: y,
+                size: 8,
+                color: rgb(0, 0, 0),
+            });
         });
-        y += 50; // statt 20 
+        y -= 20; // Abstand nach den Überschriften
     }
 
     // Tabellenzeilen
-    doc.fontSize(6).font('Helvetica');
-    rows.forEach(row => {
-        row.forEach((cell, i) => {
-            if (i === 5 && cell.startsWith('data:image')) {
+    for (const row of rows) {
+        for (const [i, cell] of row.entries()) {
+            if (cell.startsWith('data:image')) {
                 // Wenn der Wert in der Spalte "Daten" ein Bild ist
                 const base64Data = cell.split(';base64,').pop();
                 const buffer = Buffer.from(base64Data, 'base64');
-
-                const uniqueId = Date.now() + "_" + Math.random().toString(36).substring(2, 15);
-                const imagePath = `./temp_${uniqueId}.png`;
-                fs.writeFileSync(imagePath, buffer);
+                const image = await pdfDoc.embedPng(buffer); // Bild in PDF einfügen
 
                 // Bild in die "Daten"-Spalte einfügen (Größe anpassen)
-                doc.image(imagePath, startX + i * 120, y, { width: 90, height: 70 });
-                fs.unlinkSync(imagePath); // Temporäre Datei löschen
-                y += 90;
+                const imgDims = image.scale(0.3); // Größe anpassen
+                page.drawImage(image, {
+                    x: startX + i * 190,
+                    y: y - imgDims.height,
+                    width: imgDims.width,
+                    height: imgDims.height,
+                }
+            );
+                y -= imgDims.height + 20; // Abstand für das Bild (anpassen, je nach Bildhöhe)
             } else {
                 // Normaler Text in der Zelle anzeigen
-                if (cell === 'true') {
-                    doc.fillColor('green');
-                } else if (cell === 'false') {
-                    doc.fillColor('red');
-                } else {
-                    doc.fillColor('black');
-                }
-                doc.text(cell, startX + i * 120, y, { width: 100, align: 'left' });
+                page.drawText(cell, {
+                    x: startX + i * 190,
+                    y: y,
+                    size: 6,
+                    color: rgb(0, 0, 0),
+                });
             }
-        });
-        y += 15;
-
-        // Neue Seite für Tabellen, wenn Platz knapp wird
-        if (y > 500) {
-            doc.addPage({ layout: 'landscape' });
-            y = 50; // Neue Position auf der neuen Seite
         }
-    });
+        y -= 20; // Abstand für die nächste Zeile
+    }
+    
+    // Füge Abstand zwischen den Kategorien hinzu
+    y -= 120; // Zusätzlicher Abstand nach der Kategorie
 }
-
 //------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------
@@ -289,7 +278,7 @@ function createTable(doc, headers, rows, startX, startY) {
         }
 
         // Schreiben der aktualisierten JSON in die Datei
-    fs.writeFileSync('Pruefplaeneverzeichnis_Test_.json', JSON.stringify(existingJson, null, 2));
+    fs.writeFileSync(path.join(process.cwd(), 'Pruefplaeneverzeichnis_Test_.json'), JSON.stringify(existingJson, null, 2));
     console.log('Die aktualisierte JSON wurde in "Pruefplaeneverzeichnis_Test_.json" geschrieben.');
 
     } catch (error) {
@@ -329,7 +318,12 @@ if(fs.existsSync(hostid_file)){
 // Add this line right before the app.listen() call
 ensurePruefungenDirectory();
 
-app.use(cors());
+const corsOptions = {
+    methods: ['GET', 'POST'], // Erlaube bestimmte Methoden
+    credentials: true // Erlaube das Senden von Cookies
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 app.use(bodyParser.json({limit: '100mb'}));
 const port = process.env.PORT || 4001;
@@ -402,7 +396,7 @@ app.get('/Zwischenspeicherverzeichnis_List', async (req, res) => {
 
     try {
         //const zg_pruefplaene = JSON.parse(fs.readFileSync('pruefungen/speichern/result.json', 'utf-8'));
-        const zg_pruefplaene = JSON.parse(fs.readFileSync('result.json', 'utf-8'));
+        const zg_pruefplaene = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'result.json'), 'utf-8'));
         res.status(200).json(zg_pruefplaene);
         //console.log("send zg_List")
         //console.log(zg_pruefplaene)
@@ -489,6 +483,9 @@ app.get('/pruefungen/speichern/:pruefplan', async (req, res) => {
             
             let jsonData = JSON.parse(data);
 
+            //const decompressedData = decompress(data);
+            //const jsonData = JSON.parse(decompressedData);
+
             //console.log("jsonData - bevor es rausgeht");
             //console.log(jsonData);
 
@@ -533,24 +530,26 @@ app.post('/pruefungen/speichern/', (req, res) => {
     var name = req.query.name;
     console.log("POST /pruefungen/speichern/##################################################");
     console.log("name zwischenspeichern");
+    // const compressedData = compress(JSON.stringify(req.body));
     //console.log(name);
     //console.log("POST /pruefungen/speichern/");
     //console.log("Pruefplan speichern:", req.file.originalname);
-    fs.writeFileSync("pruefungen/speichern/" + name + ".json", JSON.stringify(req.body));
+    fs.writeFileSync(path.join(process.cwd(), "pruefungen", "speichern", name + ".json"), JSON.stringify(req.body));
     res.status(200).send("Pruefplan erfolgreich gespeichert.");
   });
 
 
 
-app.post("/pruefungen/senden", uploadStorage.single('pruefplan'), async (req, res) => {
+app.post("/pruefungen/senden/", uploadStorage.single('pruefplan'), async (req, res) => {
   //var pruefung = req.;  
-  var name = req.query.name;
+  const name = req.query.name;
+  //const compressedData = compress(JSON.stringify(req.body));
   //console.log(name);
   //console.log(req)
   console.log("POST pruefungen/senden");
 
   // Pfad des zu löschenden JSON-Dokuments
-  const deleteFilePath = path.join("pruefungen/speichern/", `${globalPruefplan}.json`);
+  const deleteFilePath = path.join(process.cwd(), 'pruefungen', 'speichern', `${globalPruefplan}.json`);
 
   // Datei löschen, falls sie existiert
   if (fs.existsSync(deleteFilePath)) {
@@ -564,7 +563,8 @@ app.post("/pruefungen/senden", uploadStorage.single('pruefplan'), async (req, re
   }
 
   // Pfad des neuen Ordners erstellen
-  const folderPath = path.join("pruefungen/senden", name);
+  const folderPath = path.join(process.cwd(), "pruefungen", "senden", name);
+  ensurePruefungenDirectory(folderPath);
 
   // Ordner erstellen, falls er nicht existiert
   if (!fs.existsSync(folderPath)) {
@@ -581,8 +581,9 @@ app.post("/pruefungen/senden", uploadStorage.single('pruefplan'), async (req, re
   //createPDF(req.body, 'Pruefungsbericht.pdf');
   //console.log("Pruefplan hochgeladen:", req.file.originalname);
   // PDF erstellen und speichern, mit dynamischem Namen
-  const pdfPath = path.join(folderPath, `${name}.pdf`);
+  const pdfPath = path.join(process.cwd(), "pruefungen", "senden", name, `${name}.pdf`);
   createPDF(req.body, pdfPath, name);
+
   console.log(`PDF-Datei erstellt: ${pdfPath}`);
     
   res.status(200).send("Pruefplan erfolgreich hochgeladen.");
@@ -590,8 +591,8 @@ app.post("/pruefungen/senden", uploadStorage.single('pruefplan'), async (req, re
 
 app.delete('/pruefungen/speichern/:pruefplan', (req, res) => {
     const pruefplan = req.params.pruefplan;
-    const sendenPath = path.join(__dirname, 'pruefungen', 'senden', pruefplan + '.json');
-    const speichernPath = path.join(__dirname, 'pruefungen', 'speichern', pruefplan + '.json');
+    const sendenPath = path.join(process.cwd(), 'pruefungen', 'senden', pruefplan + '.json');
+    const speichernPath = path.join(process.cwd(), 'pruefungen', 'speichern', pruefplan + '.json');
     
     fs.unlink(speichernPath, (err) => {
       if (err) {
