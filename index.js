@@ -130,15 +130,15 @@ async function createPDF(data, outputFilePath, name) {
         const items = data[section];
 
         // Tabellenüberschriften und Zeilen vorbereiten
-        let headers = [section, 'Benötigt', 'Erfüllt', 'Kommentar', 'Daten'];
+        let headers = [section, 'Schritt', 'Erfüllt', 'Kommentar', 'Daten'];
         const rows = [];
 
         for (const key in items) {
             const item = items[key];
             if (typeof item === 'object') {
                 const row = [
+                    key || '',
                     item.Beschreibung || '',
-                    item.Benötigt !== undefined ? item.Benötigt.toString() : '',
                     item.erfuellt !== undefined ? item.erfuellt.toString() : '',
                     item.Kommentar !== undefined ? item.Kommentar.toString() : '-'
                 ];
@@ -196,7 +196,7 @@ async function createTable(page, headers, rows, startX, startY, pdfDoc) {
     // Tabellenzeilen
     for (const row of rows) {
         for (const [i, cell] of row.entries()) {
-            if (cell.startsWith('data:image')) {
+            if (cell && typeof cell === 'string' && cell.startsWith('data:image')) {
                 // Wenn der Wert in der Spalte "Daten" ein Bild ist
                 const base64Data = cell.split(';base64,').pop();
                 const buffer = Buffer.from(base64Data, 'base64');
@@ -212,7 +212,7 @@ async function createTable(page, headers, rows, startX, startY, pdfDoc) {
                 }
             );
                 y -= imgDims.height + 20; // Abstand für das Bild (anpassen, je nach Bildhöhe)
-            } else {
+            } else if (cell !== undefined) {
                 // Normaler Text in der Zelle anzeigen
                 page.drawText(cell, {
                     x: startX + i * 190,
