@@ -1,0 +1,122 @@
+{  
+    "Eingangsinformationen": {
+        "Auftrags-Nr.": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "Materialnummer": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "Serial-Nr.": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "SF6-Prozentsatzeinheit - 3-027-121V__ / 3-027-_____V__": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": true
+        },
+        "SF6-Prozentsatzeinheit: Serial-Nr.": { 
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "SF6-Feuchteeinheit - 05-1354-R_____": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": true
+        },
+        "SF6-Feuchteeinheit: Serial-Nr.": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "Touchpanel: Serial-Nr.": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "Softwareversion: V": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": true
+        },
+        "Mini-Kompressor / 24V - B100R20: Serial-Nr.": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "Li-Ion Akku mit BMS 05-1547-R009: Serial-Nr.": {
+            "Beschreibung": "",
+            "Typ": "Barcode",
+            "Benötigt": true
+        },
+        "Bearbeiter": {
+            "Beschreibung": "",
+            "Typ": "Text",
+            "Benötigt": true
+        }
+    },
+    
+    "Prüfung": {
+        "P1": {
+            "Beschreibung": "Druckminderer mit N2 - Pos.181/5,0 bar abs. / Nullpunkt Module überprüfen",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P2": {
+            "Beschreibung": "Module mit Referenzgasen justieren",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P3": {
+            "Beschreibung": "Messgasschlauch spülen (SF6)",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P4": {
+            "Beschreibung": "Equipment - 6m Schlauch, USB-Stick BA bespielen, Adapterset, Kupplung DN8/DN20, SD-Karte",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P5": {
+            "Beschreibung": "Prüfprotokoll erstellen / Excel-Liste eintragen",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P6": {
+            "Beschreibung": "Spülmessung mit SF6 in den Beutel mit Funktion -> Sonderfunktion -> Messchlauch spülen",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P7": {
+            "Beschreibung": "Werkseinstellungen / Auslieferungszustand einstellen nach Vorgabe [siehe Anweisung]",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P8": {
+            "Beschreibung": "DILO-Prüfstempel anbringen",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P9": {
+            "Beschreibung": "Benutzerverwaltung „User“ / Auto. Login ",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P10": {
+            "Beschreibung": "Zähler des QR-Codes für die Garantie in SystemConfig zurücksetzen auf „0“",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        },
+        "P11": {
+            "Beschreibung": "LIFETIME AKTIVIEREN",
+            "Typ": "Checkbox",
+            "Benötigt": true
+        }
+    }
+}
